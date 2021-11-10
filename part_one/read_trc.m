@@ -9,5 +9,7 @@ function data = read_trc(file)
 
 % Read the data from the .trc file
 data = readtable(file, "FileType", "Text", "VariableNamingRule", "Preserve", "VariableNamesLine", 4, "NumHeaderLines", 6);
+% only keep the first 182 columns
+data = data(:,1:182);
 end
 
