@@ -4,7 +4,7 @@ function [filtered_data] = preprocess_marker_data(raw_data,trc_time, range)
 % number of samples per second
 fs = find(trc_time==1)-find(trc_time==0);
 
-fc= range(2);
+fc= range;
 % normalized frequency
 w0 = fc/(fs/2);
 

@@ -46,7 +46,7 @@
 clear; 
 close all;
 
-file = "C:\Users\sinad\OneDrive - Georgia Institute of Technology\BMI 500 Bio Informatics\wk12\dataset\669\sit-rest1-TP.trc";
+file = "C:\Users\sinad\OneDrive - Georgia Institute of Technology\BMI 500 Bio Informatics\wk12\dataset\deidentified_trc\273\sit-point1-TP.trc";
 trc = rename_trc(read_trc(file));
 % Read the column for L.Wrist x, y, z coordinates
 raw_data = trc{:,startsWith(names(trc),"L.Wrist")};
@@ -84,6 +84,15 @@ ylabel('Time (s)')
 wtf = gca;
 view([30 45]);
 
+% differen visualization of power
+figure(3)
+hold on
+for i=size(p,2)
+    plot(f, p(:, i));
+end
+xlabel('Hz')
+ylabel('mm^2/Hz')
+hold off
 % histogram percent of population vs. freq peaks
 %% Summarize outcomes for the left wrist resting-action tremor
 
