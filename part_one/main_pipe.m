@@ -57,8 +57,13 @@ filtered_data = preprocess_marker_data(raw_data, trc.Time, [2, 45]);
 
 % 2- Singular value decomposition - return primary component
 pc1_mm = pc1(filtered_data);
-disp(size(pc1_mm))
+% disp(size(pc1_mm))
+
 % 3- tremor analysis
+% ToDo: loop through subdirectories and records
+fName = file;
+markerName = "L.Wrist";
+[p, f, t ] = tremor_analysis('fName',fName, 'markerName',markerName);
 
 %% plots
 
@@ -70,6 +75,14 @@ plot(time_s, pc1_mm);
 xlim([0 5]);
 xlabel('seconds')
 ylabel('mm')
+
+% 3D visualization
+figure(2)
+waterfall(f, seconds(t), p')
+xlabel('Freq (Hz)');
+ylabel('Time (s)')
+wtf = gca;
+view([30 45]);
 
 % histogram percent of population vs. freq peaks
 %% Summarize outcomes for the left wrist resting-action tremor
