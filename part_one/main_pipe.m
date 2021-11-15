@@ -46,7 +46,13 @@
 clear; 
 close all;
 
+dbPath = 'C:\Users\sinad\OneDrive - Georgia Institute of Technology\BMI 500 Bio Informatics\wk12\dataset\deidentified_trc\';
 file = "C:\Users\sinad\OneDrive - Georgia Institute of Technology\BMI 500 Bio Informatics\wk12\dataset\deidentified_trc\273\sit-point1-TP.trc";
+
+% Initialize variable:
+outcomes.max_p=[] ; outcomes.f_max_p = []; outcomes.f_sd = []; 
+outcomes.rms_power=[];
+
 trc = rename_trc(read_trc(file));
 % Read the column for L.Wrist x, y, z coordinates
 raw_data = trc{:,startsWith(names(trc),"L.Wrist")};
@@ -71,24 +77,108 @@ markerName = "L.Wrist";
 p_max = max(p(:,2:end),[], 2);
 
 % frequency at overall max power (Hz)
-[max_p, idx] = max(p_max);
-f_max_p = idx/100;
+[outcomes.max_p(1,1), idx] = max(p_max);
+outcomes.f_max_p(1,1) = idx/100;
 
 % variability in peak frequency 
 [pks, locs] = findpeaks(p_max);
-f_sd = std(pks);
+outcomes.f_sd(1,1) = std(pks);
 
 % average RMS power (mm) within +/- 0.5 Hz of freq at overall max power
 try
-    rms_power = rms(p_max(round(idx - 50): round(idx + 50)));
+    outcomes.rms_power(1,1) = rms(p_max(round(idx - 50): round(idx + 50)));
 catch
     if (idx-50)<0
-        rms_power = NaN;
+        outcomes.rms_power(1,1) = NaN;
     end
 end
 
-outcomes = [max_p, f_max_p, f_sd, rms_power];
+% outcomes = [max_p, f_max_p, f_sd, rms_power];
 disp(outcomes)
+
+dirNames = dir(fullfile(dbPath));
+folderNames = dirNames([dirNames(:).isdir]);
+folderNames = folderNames(~ismember({folderNames(:).name},{'.','..'}));
+
+[numPatients, ~] = size(folderNames);
+% try
+% 
+%     for fn=1:numPatients
+%         fprintf('Currently Processing subject: %s \n', folderNames(fn,:).name);
+%         recordNames = dir(fullfile(dbPath, folderNames(fn,:).name,'*.trc'));
+% 
+%         [numRecords, ~] = size(recordNames);
+%         for rn=1:numRecords
+%             fprintf('Currently Processing record #: %s \n', recordNames(rn,:).name);
+%             [~, baseFileName, extension] = fileparts(recordNames(rn, :).name);
+% %             pathSplit = split(dbPath, '\');
+%             inPath = fullfile(dbPath,folderNames(fn,:).name, baseFileName, extension);
+%             
+% %           Preprocessing
+% %             outPath = 'preprocessed.csv';
+% %             [fs] = preprocessing(inPath, outPath, nChannels);
+%             trc = rename_trc(read_trc(inPath));
+%             % Read the column for L.Wrist x, y, z coordinates
+%             raw_data = trc{:,startsWith(names(trc),"L.Wrist")};
+%             
+%             % 1- filter the data
+%             filtered_data = preprocess_marker_data(raw_data, trc.Time, [2, 45]);
+%             
+%             
+%             % 2- Singular value decomposition - return primary component
+%             pc1_mm = pc1(filtered_data);
+%             % disp(size(pc1_mm))
+%             
+%             % 3- tremor analysis
+%             % ToDo: loop through subdirectories and records
+%             fName = file;
+%             markerName = "L.Wrist";
+%             [p, f, t ] = tremor_analysis('fName',fName, 'markerName',markerName);
+%             
+%             % power analysis
+%             
+%             % max power
+%             p_max = max(p(:,2:end),[], 2);
+%             
+%             % frequency at overall max power (Hz)
+%             [max_p, idx] = max(p_max);
+%             f_max_p = idx/100;
+%             
+%             % variability in peak frequency 
+%             [pks, locs] = findpeaks(p_max);
+%             f_sd = std(pks);
+%             
+%             % average RMS power (mm) within +/- 0.5 Hz of freq at overall max power
+%             try
+%                 rms_power = rms(p_max(round(idx - 50): round(idx + 50)));
+%             catch
+%                 if (idx-50)<0
+%                     rms_power = NaN;
+%                 end
+%             end
+%             
+%             outcomes = [max_p, f_max_p, f_sd, rms_power];
+% 
+% %           Analysis
+% %             processedPath = outPath; 
+% %             [fPath,fName,fExt]=fileparts(inPath);
+% %             figPath = fullfile(results_path, folderNames(fn,:).name);
+% %             if ~exist(figPath, 'dir')
+% %                 mkdir(figPath)
+% %             end
+%     %       Method_1: Fattahi
+%     %       Method_2: Li    
+% %             [Method_2, Method_1] = QT_measurements(processedPath, fName, figPath, nChannels, fs);
+%             
+%         end
+%     end
+% 
+% catch
+%     if isempty(folderNames)
+%         fprintf('Dataset did not load properly. Please check the path.');
+%     end
+% 
+% end
 %% plots
 
 % plot the first few seconds
