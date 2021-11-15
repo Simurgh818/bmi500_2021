@@ -65,6 +65,30 @@ fName = file;
 markerName = "L.Wrist";
 [p, f, t ] = tremor_analysis('fName',fName, 'markerName',markerName);
 
+% power analysis
+
+% max power
+p_max = max(p(:,2:end),[], 2);
+
+% frequency at overall max power (Hz)
+[max_p, idx] = max(p_max);
+f_max_p = idx/100;
+
+% variability in peak frequency 
+[pks, locs] = findpeaks(p_max);
+f_sd = std(pks);
+
+% average RMS power (mm) within +/- 0.5 Hz of freq at overall max power
+try
+    rms_power = rms(p_max(round(idx - 50): round(idx + 50)));
+catch
+    if (idx-50)<0
+        rms_power = NaN;
+    end
+end
+
+outcomes = [max_p, f_max_p, f_sd, rms_power];
+disp(outcomes)
 %% plots
 
 % plot the first few seconds
